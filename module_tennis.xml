@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_tennis" default="compile.module.tennis">
+  <dirname property="module.tennis.basedir" file="${ant.file.module_tennis}"/>
+  
+  <property name="module.jdk.home.tennis" value="${jdk.home.1.8}"/>
+  <property name="module.jdk.bin.tennis" value="${jdk.bin.1.8}"/>
+  <property name="module.jdk.classpath.tennis" value="jdk.classpath.1.8"/>
+  
+  <property name="compiler.args.tennis" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="tennis.output.dir" value="${module.tennis.basedir}/out/production/Tennis"/>
+  <property name="tennis.testoutput.dir" value="${module.tennis.basedir}/out/test/Tennis"/>
+  
+  <path id="tennis.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="tennis.module.production.classpath">
+    <path refid="${module.jdk.classpath.tennis}"/>
+    <pathelement location="${idea.home}/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${idea.home}/lib/junit-4.12.jar"/>
+  </path>
+  
+  <path id="tennis.runtime.production.module.classpath">
+    <pathelement location="${tennis.output.dir}"/>
+    <pathelement location="${idea.home}/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${idea.home}/lib/junit-4.12.jar"/>
+  </path>
+  
+  <path id="tennis.module.classpath">
+    <path refid="${module.jdk.classpath.tennis}"/>
+    <pathelement location="${tennis.output.dir}"/>
+    <pathelement location="${idea.home}/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${idea.home}/lib/junit-4.12.jar"/>
+  </path>
+  
+  <path id="tennis.runtime.module.classpath">
+    <pathelement location="${tennis.testoutput.dir}"/>
+    <pathelement location="${tennis.output.dir}"/>
+    <pathelement location="${idea.home}/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${idea.home}/lib/junit-4.12.jar"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.tennis">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.tennis">
+    <patternset refid="excluded.from.module.tennis"/>
+  </patternset>
+  
+  <path id="tennis.module.sourcepath">
+    <dirset dir="${module.tennis.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.tennis" depends="compile.module.tennis.production,compile.module.tennis.tests" description="Compile module Tennis"/>
+  
+  <target name="compile.module.tennis.production" depends="register.custom.compilers" description="Compile module Tennis; production classes">
+    <mkdir dir="${tennis.output.dir}"/>
+    <javac2 destdir="${tennis.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.tennis}/javac">
+      <compilerarg line="${compiler.args.tennis}"/>
+      <bootclasspath refid="tennis.module.bootclasspath"/>
+      <classpath refid="tennis.module.production.classpath"/>
+      <src refid="tennis.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.tennis"/>
+    </javac2>
+    
+    <copy todir="${tennis.output.dir}">
+      <fileset dir="${module.tennis.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.tennis.tests" depends="register.custom.compilers,compile.module.tennis.production" description="compile module Tennis; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.tennis" description="cleanup module">
+    <delete dir="${tennis.output.dir}"/>
+    <delete dir="${tennis.testoutput.dir}"/>
+  </target>
+</project>
